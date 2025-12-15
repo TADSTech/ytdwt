@@ -2,8 +2,8 @@
 name = "ytdwt"
 version = "0.1.0"
 edition = "2021"
-authors = ["Your Name"]
-description = "YouTube Downloader with Tools - A GUI for yt-dlp"
+authors = ["Michael Tunwashe"]
+description = "YouTube Downloader with Tools - Yet another GUI for yt-dlp"
 license = "MIT"
 
 [dependencies]

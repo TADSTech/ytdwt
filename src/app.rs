@@ -54,8 +54,7 @@ impl YtdwtApp {
 
         let downloader = Arc::clone(&self.downloader);
         self.runtime.spawn(async move {
-            let mut dl = downloader.lock().unwrap();
-            let _ = dl.download(options).await;
+            let _ = crate::downloader::run_download(downloader, options).await;
         });
     }
 
