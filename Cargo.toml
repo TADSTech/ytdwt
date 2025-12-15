@@ -1,0 +1,23 @@
+[package]
+name = "ytdwt"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name"]
+description = "YouTube Downloader with Tools - A GUI for yt-dlp"
+license = "MIT"
+
+[dependencies]
+eframe = "0.29"
+egui = "0.29"
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rfd = "0.15"
+dirs = "5.0"
+
+[profile.release]
+opt-level = "z"     # Optimize for size
+lto = true          # Link-time optimization
+codegen-units = 1   # Better optimization
+strip = true        # Strip symbols
+panic = "abort"     # Smaller binary
