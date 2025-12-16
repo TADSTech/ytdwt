@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ytdwt</title>
+    <link rel="icon" type="image/png" href="ytdwt.png">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050505;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            pointer-events: none;
+            /* Let clicks pass through to canvas if needed, but we need links to work */
+        }
+
+        /* Re-enable pointer events for interactive elements */
+        #content a,
+        #content h1 {
+            pointer-events: auto;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -2px;
+            font-weight: normal;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .info {
+            margin-top: 3rem;
+            opacity: 0.8;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .description {
+            margin-bottom: 1rem;
+            color: #aaa;
+        }
+
+        .features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .features li {
+            position: relative;
+        }
+
+        /* Subtle separator */
+        .features li:not(:last-child)::after {
+            content: "•";
+            position: absolute;
+            right: -0.9rem;
+            color: #333;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 0.8;
+                transform: translateY(0);
+            }
+        }
+
+        .links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        a:hover {
+            opacity: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="canvas-container">
+        <canvas id="hero-canvas"></canvas>
+    </div>
+
+    <div id="content">
+        <h1>ytdwt</h1>
+        <p>minimalist media downloader</p>
+        <div class="links">
+            <a href="https://github.com/TADSTech/ytdwt" target="_blank">github</a>
+            <a href="https://tadstech.web.app" target="_blank">website</a>
+        </div>
+
+        <div class="info">
+            <p class="description">
+                Lightweight GUI for downloading YouTube videos/audio via yt-dlp.
+            </p>
+            <ul class="features">
+                <li>Video & Audio Downloads</li>
+                <li>Playlist Support</li>
+                <li>Quality Selection</li>
+                <li>Rust + egui</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // 3D Geometry (Icosahedron-ish vertices)
+        const t = (1 + Math.sqrt(5)) / 2;
+        const vertices = [
+            [-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0],
+            [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t],
+            [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]
+        ];
+
+        const edges = [
+            [0, 11], [0, 5], [0, 1], [0, 7], [0, 10],
+            [1, 5], [1, 9], [1, 8], [1, 7],
+            [2, 11], [2, 10], [2, 6], [2, 3], [2, 4],
+            [3, 4], [3, 9], [3, 8], [3, 6],
+            [4, 5], [4, 9], [4, 11],
+            [5, 11], [5, 9], // Duplicates possible but okay for wireframe
+            [6, 7], [6, 10], [6, 8],
+            [7, 8], [7, 10],
+            [8, 9],
+            [10, 11]
+        ];
+
+        // Clean up redundant edges logic would be here, but visual overlap is fine for thin lines.
+
+        let angleX = 0;
+        let angleY = 0;
+
+        function rotate(v, ax, ay) {
+            let x = v[0], y = v[1], z = v[2];
+
+            // Rotate Y
+            let x1 = x * Math.cos(ay) - z * Math.sin(ay);
+            let z1 = x * Math.sin(ay) + z * Math.cos(ay);
+
+            // Rotate X
+            let y1 = y * Math.cos(ax) - z1 * Math.sin(ax);
+            let z2 = y * Math.sin(ax) + z1 * Math.cos(ax);
+
+            return [x1, y1, z2];
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            const scale = Math.min(width, height) / 5;
+            const cx = width / 2;
+            const cy = height / 2;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'; // Very subtle
+            ctx.lineWidth = 1.5;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            angleY += 0.005;
+            angleX += 0.002;
+
+            ctx.beginPath();
+
+            // Project vertices
+            const projected = vertices.map(v => {
+                const r = rotate(v, angleX, angleY);
+                // Simple perspective
+                const distance = 4;
+                const z = 1 / (distance - (r[2] / scale)); // Normalized z not really needed for orthographic-ish look but let's keep it simple
+                // Let's stick to weak perspective / orthographic for the "logo" feel
+                return [
+                    cx + r[0] * scale,
+                    cy + r[1] * scale
+                ];
+            });
+
+            // Draw edges
+            edges.forEach(edge => {
+                const v1 = projected[edge[0]];
+                const v2 = projected[edge[1]];
+
+                ctx.moveTo(v1[0], v1[1]);
+                ctx.lineTo(v2[0], v2[1]);
+            });
+
+            ctx.stroke();
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+
+    </script>
+</body>
+
+</html>
