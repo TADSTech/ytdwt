@@ -121,17 +121,28 @@ pub async fn run_download(downloader: Arc<Mutex<Downloader>>, options: DownloadO
     // URL
     args.push(options.url.clone());
 
+    // Find yt-dlp executable
+    let mut exe_path = std::env::current_exe().ok();
+    let mut yt_dlp_cmd = "yt-dlp".to_string();
+
+    if let Some(mut path) = exe_path {
+        path.pop(); // Remove filename
+        let local_yt_dlp = path.join("yt-dlp.exe");
+        if local_yt_dlp.exists() {
+            yt_dlp_cmd = local_yt_dlp.to_string_lossy().to_string();
+        }
+    }
+
     // Execute yt-dlp
-    let mut child = Command::new("yt-dlp")
+    let mut child = Command::new(yt_dlp_cmd)
         .args(&args)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
         .map_err(|e| {
             let err_msg = if e.kind() == std::io::ErrorKind::NotFound {
-                "yt-dlp not found. Please install yt-dlp first.\n\
-                 Install with: pip install yt-dlp\n\
-                 Or visit: https://github.com/yt-dlp/yt-dlp#installation"
+                "yt-dlp not found. Please install yt-dlp or place yt-dlp.exe in the application folder.\n\
+                 Download from: https://github.com/yt-dlp/yt-dlp/releases"
                     .to_string()
             } else {
                 format!("Failed to start yt-dlp: {}", e)

@@ -33,6 +33,7 @@ Lightweight GUI for downloading YouTube videos/audio via `yt-dlp`.
 
 ### Build from Source
 
+#### Linux
 1.  **Clone**
     ```bash
     git clone https://github.com/tadstech/ytdwt.git
@@ -48,6 +49,25 @@ Lightweight GUI for downloading YouTube videos/audio via `yt-dlp`.
 3.  **Run**
     ```bash
     ./target/release/ytdwt
+    ```
+
+#### Windows
+1.  **Clone**
+    ```powershell
+    git clone https://github.com/tadstech/ytdwt.git
+    cd ytdwt
+    ```
+
+2.  **Build**
+    Run the build script to compile the application and collect dependencies:
+    ```powershell
+    .\build.ps1
+    ```
+
+3.  **Install**
+    Run the installation script to copy the app to Program Files and create shortcuts:
+    ```powershell
+    .\install.ps1
     ```
 
 ## Usage

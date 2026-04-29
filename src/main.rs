@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 mod app;
 mod config;
 mod downloader;
@@ -21,21 +23,14 @@ fn main() -> eframe::Result<()> {
 }
 
 fn load_icon() -> eframe::egui::IconData {
-    // Create a simple icon (16x16 red square as placeholder)
-    let icon_size = 16;
-    let mut rgba = vec![0u8; icon_size * icon_size * 4];
+    let icon_bytes = include_bytes!("../app_icon.png");
+    let image = image::load_from_memory(icon_bytes).expect("Failed to load icon");
+    let image = image.to_rgba8();
+    let (width, height) = image.dimensions();
     
-    for i in 0..icon_size * icon_size {
-        let offset = i * 4;
-        rgba[offset] = 220;     // R
-        rgba[offset + 1] = 38;  // G
-        rgba[offset + 2] = 38;  // B
-        rgba[offset + 3] = 255; // A
-    }
-
     eframe::egui::IconData {
-        rgba,
-        width: icon_size as u32,
-        height: icon_size as u32,
+        rgba: image.into_raw(),
+        width,
+        height,
     }
 }
