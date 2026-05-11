@@ -54,7 +54,7 @@ function updateRateLimitDisplay() {
 async function initializePyodide() {
     try {
         pyodide = await loadPyodide();
-        await pyodide.loadPackage(['micropip']);
+        await pyodide.loadPackage(['micropip', 'ssl']);
         
         // Install yt-dlp
         await pyodide.runPythonAsync(`
@@ -70,7 +70,7 @@ async function initializePyodide() {
         return true;
     } catch (error) {
         console.error('Failed to initialize Pyodide:', error);
-        showError('Failed to initialize YouTube downloader. Please refresh the page.');
+        showError('Failed to initialize YouTube downloader. Please refresh page.');
         return false;
     }
 }
@@ -78,17 +78,21 @@ async function initializePyodide() {
 // Initialize FFmpeg
 async function initializeFFmpeg() {
     try {
-        ffmpeg = new FFmpeg();
-        ffmpeg.on('log', ({ message }) => {
-            console.log('FFmpeg log:', message);
-        });
-        
-        ffmpeg.on('progress', ({ progress }) => {
-            updateProgress(progress * 100, 'Processing video...');
-        });
-        
-        await ffmpeg.load();
-        console.log('FFmpeg loaded successfully');
+        if (typeof FFmpeg !== 'undefined') {
+            ffmpeg = new FFmpeg();
+            ffmpeg.on('log', ({ message }) => {
+                console.log('FFmpeg log:', message);
+            });
+            
+            ffmpeg.on('progress', ({ progress }) => {
+                updateProgress(progress * 100, 'Processing video...');
+            });
+            
+            await ffmpeg.load();
+            console.log('FFmpeg loaded successfully');
+        } else {
+            console.log('FFmpeg not available, skipping...');
+        }
         return true;
     } catch (error) {
         console.error('Failed to initialize FFmpeg:', error);
