@@ -130,26 +130,39 @@
 
         .download-btn {
             width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #e0e0e0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
             padding: 1rem;
             font-family: 'Courier New', Courier, monospace;
             font-size: 1rem;
             border-radius: 4px;
-            cursor: pointer;
+            cursor: not-allowed;
             transition: all 0.3s ease;
             margin-bottom: 1rem;
         }
 
-        .download-btn:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .download-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .coming-soon-banner {
+            background: rgba(255, 100, 50, 0.1);
+            border: 1px solid rgba(255, 100, 50, 0.2);
+            color: #ff9966;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            display: inline-block;
         }
 
         .progress-section {
@@ -254,7 +267,8 @@
         <div class="header">
             <h1>ytdwt</h1>
             <p class="subtitle">web downloader</p>
-            <div class="rate-limit" id="rateLimitStatus">checking rate limit...</div>
+            <div class="coming-soon-banner">coming soon</div>
+            <div class="rate-limit" id="rateLimitStatus">serverless mode currently in development</div>
         </div>
 
         <div class="downloader-card">
@@ -298,9 +312,9 @@
             <button 
                 id="downloadBtn"
                 class="download-btn"
-                onclick="startDownload()"
+                disabled
             >
-                download
+                coming soon
             </button>
 
             <div id="progressSection" class="progress-section" style="display: none;">
